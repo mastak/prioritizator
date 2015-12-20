@@ -1,0 +1,31 @@
+{% load staticfiles %}
+{% load compress %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prioritizator{% if title %} - {{ title }}{% endif %}</title>
+
+    {% compress css %}
+        <link rel="stylesheet" href="{% static 'vendor/bootstrap.min.css' %}" />
+        {% block css_add %}
+        {% endblock %}
+    {% endcompress %}
+
+    {% block head_add %}
+    {% endblock %}
+</head>
+<body>
+
+{% compress js %}
+    <script src="{% static 'vendor/jquery-2.1.4.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendor/ismobile.min.js' %}"></script>
+    {% block bottom_scripts_add %}
+    {% endblock %}
+{% endcompress %}
+
+</body>
+</html>
