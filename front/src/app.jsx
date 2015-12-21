@@ -1,32 +1,41 @@
 import React from 'react';
-import Router, {Route} from 'react-router';
+import { render } from 'react-dom'
+import { Router, Route } from 'react-router'
+import createBrowserHistory from 'history/lib/createBrowserHistory'
 
-import AuthenticatedApp from './components/AuthenticatedApp'
+import Main from './components/Main'
+
+//import Category from './components/Category';
 import Login from './components/Login';
-import Signup from './components/Signup';
-import Home from './components/Home';
-import Quote from './components/Quote';
+//import Logout from './components/Logout';
+//import About from './components/About';
+
 import RouterContainer from './services/RouterContainer';
 import LoginActions from './actions/LoginActions';
 
-var routes = (
-  <Route handler={AuthenticatedApp}>
-    <Route name="login" handler={Login}/>
-    <Route name="signup" handler={Signup}/>
-    <Route name="home" path="/" handler={Home}/>
-    <Route name="quote" handler={Quote}/>
-  </Route>
-);
 
-var router = Router.create({routes});
-RouterContainer.set(router);
-
-let jwt = localStorage.getItem('jwt');
-if (jwt) {
-  LoginActions.loginUser(jwt);
+function requireAuth(nextState, replaceState) {
+  if (!auth.loggedIn())
+    replaceState({ nextPathname: nextState.location.pathname }, '/login')
 }
 
-router.run(function (Handler) {
-  React.render(<Handler />, document.getElementById('content'));
-});
 
+//RouterContainer.set((
+//  <Router history={browserHistory}>
+//    <Route path="/" component={App}>
+//      <Route path="category" component={Category} onEnter={requireAuth} />
+//      <Route path="login" component={Login} />
+//      <Route path="logout" component={Logout} />
+//      <Route path="about" component={About} />
+//    </Route>
+//  </Router>
+//));
+
+RouterContainer.set((
+  <Router history={createBrowserHistory()}>
+    <Route path="/" component={Main}>
+      <Route path="login" component={Login} />
+    </Route>
+  </Router>
+));
+render(RouterContainer.get(), document.getElementById('content'));

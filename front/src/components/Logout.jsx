@@ -1,21 +1,22 @@
 import React from 'react';
+// import LinkedStateMixin from 'react/addons';
+import LinkedStateMixin from 'react-addons-linked-state-mixin';
 import ReactMixin from 'react-mixin';
 import Auth from '../services/AuthService'
 
-export default class Signup extends React.Component {
+export default class Login extends React.Component {
 
   constructor() {
     super()
     this.state = {
       user: '',
-      password: '',
-      extra: ''
+      password: ''
     };
   }
 
-  signup(e) {
+  login(e) {
     e.preventDefault();
-    Auth.signup(this.state.user, this.state.password, this.state.extra)
+    Auth.login(this.state.user, this.state.password)
       .catch(function(err) {
         alert("There's an error logging in");
         console.log("Error logging in", err);
@@ -25,7 +26,7 @@ export default class Signup extends React.Component {
   render() {
     return (
       <div className="login jumbotron center-block">
-        <h1>Signup</h1>
+        <h1>Login</h1>
         <form role="form">
         <div className="form-group">
           <label htmlFor="username">Username</label>
@@ -35,15 +36,11 @@ export default class Signup extends React.Component {
           <label htmlFor="password">Password</label>
           <input type="password" valueLink={this.linkState('password')} className="form-control" id="password" ref="password" placeholder="Password" />
         </div>
-        <div className="form-group">
-          <label htmlFor="extra">Extra</label>
-          <input type="text" valueLink={this.linkState('extra')} className="form-control" id="password" ref="password" placeholder="Some extra information" />
-        </div>
-        <button type="submit" className="btn btn-default" onClick={this.signup.bind(this)}>Submit</button>
+        <button type="submit" className="btn btn-default" onClick={this.login.bind(this)}>Submit</button>
       </form>
     </div>
     );
   }
 }
 
-ReactMixin(Signup.prototype, React.addons.LinkedStateMixin);
+ReactMixin(Login.prototype, LinkedStateMixin);
