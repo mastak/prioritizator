@@ -4,36 +4,48 @@ import AppDispatcher from '../dispatchers/AppDispatcher';
 import RouterContainer from '../libs/RouterContainer'
 
 
-export default {
-  loginSocial: (code) => {
+class AccountAction {
+  login(username, password) {
+    return this._login(AccountAPI.login.bind(AccountAPI), username, password);
+  }
+
+  loginSocial(code) {
+    return this._login(AccountAPI.loginSocial.bind(AccountAPI), code)
+  }
+
+  _login() {
+    let func = Array.prototype.shift.apply(arguments);
+
     AppDispatcher.dispatch({
-      type: AccountConstants.LOGIN_REQUEST,
-      code: code
+      type: AccountConstants.LOGIN_REQUEST
     });
+    return func(arguments).then(this._login_success_cb.bind(this), this._login_fail_cb.bind(this));
+  }
 
-    AccountAPI.loginSocial(code).then(function(response) {
-      this.setAccount(response.jwt);
-    }.bind(this), function (err, msg) {
-      //console.error(msg); TODO: move err hndl to all requsts
-      AppDispatcher.dispatch({
-        type: AccountConstants.LOGIN_PROCESS,
-        err: err,
-        msg: msg
-      });
+  _login_success_cb(response) {
+    this.setAccount(response.jwt);
+  }
+
+  _login_fail_cb(err, msg) {
+    AppDispatcher.dispatch({
+      type: AccountConstants.LOGIN_PROCESS,
+      err: err,
+      msg: msg
     });
-  },
+  }
 
-  logout: () => {
+  logout() {
     AccountAPI.logout();
     this.resetAccount();
-  },
+  }
 
-  setAccount: (jwt) => {
+  setAccount(jwt) {
     let savedJwt = localStorage.getItem('jwt');
 
     if (!jwt && !savedJwt) return;
     if (jwt && savedJwt && savedJwt !== jwt) {
-      // TODO: add error  message
+      // TODO: add error message
+      console.error("Error...");
       return;
     }
 
@@ -49,11 +61,14 @@ export default {
       RouterContainer.get().transitionTo(nextPath);
       localStorage.setItem('jwt', jwt);
     }
-  },
-  resetAccount: () => {
+  }
+
+  resetAccount() {
     localStorage.removeItem('jwt');
     AppDispatcher.dispatch({
       type: AccountConstants.LOGOUT_PROCESS
     });
   }
 }
+
+export default new AccountAction();

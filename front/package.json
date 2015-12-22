@@ -20,10 +20,10 @@
     "build": "npm run build-js && npm run build-css",
     "watch": "npm run watch-js & npm run watch-css & serve .",
     "test": "npm run lint -s && npm run build",
-    "build-css": "rework-npm index.css | cleancss -o build/main.css",
-    "build-js": "browserify --extension=.jsx --extension=.js src/app.jsx | uglifyjs > build/main.js",
-    "watch-js": "watchify --extension=.jsx --extension=.js src/app.jsx -o build/main.js --debug --verbose",
-    "watch-css": "nodemon -e css --ignore build/main.css --exec 'rework-npm index.css -o build/main.css'",
+    "build-css": "rework-npm src/css/main.css | cleancss -o build/css/style.css",
+    "build-js": "browserify --extension=.jsx --extension=.js src/js/main.jsx | uglifyjs > build/js/app.js",
+    "watch-js": "watchify --extension=.jsx --extension=.js src/js/main.jsx -o build/js/app.js --debug --verbose",
+    "watch-css": "nodemon -e css --ignore build/css/style.css --exec 'rework-npm src/css/main.css -o build/css/style.css'",
     "lint-eslint": "eslint .",
     "lint-jscs": "jscs .",
     "lint": "npm run lint-eslint && npm run lint-jscs"
@@ -43,8 +43,7 @@
     "react-addons-linked-state-mixin": "^0.14.3",
     "react-dom": "^0.14.3",
     "react-router": "^1.0.2",
-    "reqwest": "^2.0.4",
-    "when": "^3.7.5"
+    "reqwest": "^2.0.4"
   },
   "devDependencies": {
     "babelify": "^6.1.0",
@@ -57,6 +56,18 @@
     "rework-npm-cli": "^0.1.1",
     "serve": "^1.4.0",
     "uglify-js": "^2.6.1",
-    "watchify": "^3.6"
+    "watchify": "^3.6",
+
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-if": "^2.0.0",
+    "gulp-minify-css": "^1.2.2",
+    "del": "^2.2.0",
+    "gulp-stylus": "^2.1.1",
+    "gulp-uglify": "^1.5.1",
+    "webpack-stream": "^3.1.0",
+    "nib": "^1.1.0",
+    "event-stream": "^3.3.2",
+    "browser-sync": "^2.10.1"
   }
 }

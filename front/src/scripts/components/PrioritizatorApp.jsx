@@ -45,7 +45,7 @@ export default class PrioritizatorApp extends React.Component {
             <IndexLink to="/" className="navbar-brand">Prioritization</IndexLink>
           </div>
           <ul className="nav navbar-nav">
-            <li><Link to="categories" activeClassName="active">Categories</Link></li>
+            <li><Link to="category" activeClassName="active">Categories</Link></li>
             <li><Link to="about" activeClassName="active">About</Link></li>
             {loginButton}
           </ul>

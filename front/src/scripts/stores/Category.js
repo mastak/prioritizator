@@ -7,8 +7,8 @@ import CategoryConstants from '../constants/Category';
 
 class CategoryStore extends Store {
 
-  constructor() {
-    super();
+  constructor(dispatcher) {
+    super(dispatcher);
     this._categories = null;
   }
 

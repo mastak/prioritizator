@@ -6,7 +6,16 @@ import AccountStore from '../stores/Account';
 import BaseAPI from './Base';
 
 
-export default class AccountAPI extends BaseAPI {
+class AccountAPI extends BaseAPI {
+
+  login (username, password) {
+    return this.post({
+      url: AccountConstants.LOGIN_URL,
+      data: {
+        username, password
+      }
+    });
+  }
 
   loginSocial (code) {
     return this.post({
@@ -24,3 +33,5 @@ export default class AccountAPI extends BaseAPI {
   }
 
 }
+
+export default new AccountAPI();
