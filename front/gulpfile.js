@@ -1,8 +1,7 @@
 var gulp = require('gulp'),
   gulpif = require('gulp-if'),
-  clean = require('del'),
-  browserSync = require('browser-sync'),
-  reloadMe = require('browser-sync').reload,
+  del = require('del'),
+  browserSync = require('browser-sync').create(),
   //imageMin = require('gulp-imagemin'),
   webpack = require('webpack-stream'),
   concat = require('gulp-concat'),
@@ -11,26 +10,29 @@ var gulp = require('gulp'),
   cssMin = require('gulp-minify-css'),
   nib = require('nib'),
   es = require('event-stream'),
-  merge = require('event-stream').concat;
+  merge = require('event-stream').concat,
+  sourcemaps = require('gulp-sourcemaps'),
+  browserify = require('browserify'),
+  source = require('vinyl-source-stream'),
+  buffer = require('vinyl-buffer');
 
-var buildDir = './build';
-  //publicAssetsDir = './build/assets';
+var buildDir = './build',
+    buildDirJS = './build/js/';
 
 var webpackAppJS = function(minifyMe) {
-  return gulp.src('./src/scripts/main.jsx')
-    .pipe(webpack({
-      module: {
-        loaders: [
-          { test: /\.jsx$/, loader: 'jsx-loader?insertPragma=React.DOM' }
-        ]
-      },
-      resolve: {
-        extensions: ['', '.js', '.jsx']
-      }
-    }))
-    .pipe(concat('app.js'))
+  var b = browserify({
+    entries: './src/scripts/main.jsx',
+    extensions: ['.js', '.jsx'],
+    debug: true
+  });
+
+  return b.bundle()
+    .pipe(source('app.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(gulpif(minifyMe, uglify()))
-    .pipe(gulp.dest(buildDir));
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(buildDirJS));
 };
 
 var concatCSS = function(minifyMe) {
@@ -41,7 +43,7 @@ var concatCSS = function(minifyMe) {
   .pipe(concat('style.css'))
   .pipe(gulpif(minifyMe, cssMin()))
   .pipe(gulp.dest(buildDir))
-  .pipe(reloadMe({stream:true}));
+  .pipe(browserSync.reload({stream:true}));
 };
 
 var copyStuff = function(minifyMe) {
@@ -75,29 +77,37 @@ var filterEmptyDirs = function() {
 
 //opens up browserSync url
 var syncMe = function() {
-  browserSync({
-    proxy: "localhost:8888",
-    open: false
+  browserSync.init({
+    baseDir: "build",
+    serveStatic: [buildDir],
+    server: true,
+    logLevel: "debug",
+    logConnections: true
+    //open: false
     // notify: false
   });
 };
 
 //cleans build folder
 gulp.task('clean', function() {
-  //return gulp.src(buildDir, {read: false}).pipe(clean());
-  return gulp.task('clean', function() {
-    return del([buildDir]);
-  });
-
+  //return del([buildDir + '/**', '!' + buildDir + '.keep']);
+  return del(['build/**', '!build', '!build/.keep']);
 });
 
 //build + watching, for development
 gulp.task('default', ['clean'], function() {
 
+  //browserSync({
+    //proxy: "localhost:8888",
+    //open: false,
+    //baseDir: buildDir
+    // notify: false
+  //});
+
   gulp.watch(['./src/scripts/**/*.js', './src/scripts/**/*.jsx'], function() {
     console.log("File change - webpackAppJS()");
     webpackAppJS()
-    .pipe(reloadMe({stream:true}));
+    .pipe(browserSync.reload({stream:true}));
   });
 
   gulp.watch('./src/styles/**/*.styl', function() {
@@ -113,7 +123,7 @@ gulp.task('default', ['clean'], function() {
   ], function() {
     console.log("File change - copyStuff()");
     copyStuff()
-    .pipe(reloadMe({stream:true}));
+    .pipe(browserSync.reload({stream:true}));
   });
 
   return merge(copyStuff(), concatCSS(), webpackAppJS())
