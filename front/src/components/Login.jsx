@@ -7,7 +7,7 @@ import Auth from '../services/AuthService'
 export default class Login extends React.Component {
 
   constructor() {
-    super()
+    super();
     this.state = {
       user: '',
       password: ''

@@ -3,37 +3,29 @@ import { render } from 'react-dom'
 import { Router, Route } from 'react-router'
 import createBrowserHistory from 'history/lib/createBrowserHistory'
 
-import Main from './components/Main'
+import AccountActions from './actions/Account'
+import AccountStore from './stores/Account';
+import AppDispatcher from './dispatchers/AppDispatcher';
+import RouterContainer from './libs/RouterContainer';
 
-//import Category from './components/Category';
+import PrioritizatorApp from './components/PrioritizatorApp'
+import About from './components/About';
+import Category from './components/Category';
 import Login from './components/Login';
-//import Logout from './components/Logout';
-//import About from './components/About';
-
-import RouterContainer from './services/RouterContainer';
-import LoginActions from './actions/LoginActions';
 
 
 function requireAuth(nextState, replaceState) {
-  if (!auth.loggedIn())
-    replaceState({ nextPathname: nextState.location.pathname }, '/login')
+  if (!AccountStore.isLoggedIn())
+    replaceState({ nextPath: nextState.location.pathname }, '/login')
 }
 
-
-//RouterContainer.set((
-//  <Router history={browserHistory}>
-//    <Route path="/" component={App}>
-//      <Route path="category" component={Category} onEnter={requireAuth} />
-//      <Route path="login" component={Login} />
-//      <Route path="logout" component={Logout} />
-//      <Route path="about" component={About} />
-//    </Route>
-//  </Router>
-//));
+AccountActions.setAccount();
 
 RouterContainer.set((
   <Router history={createBrowserHistory()}>
-    <Route path="/" component={Main}>
+    <Route path="/" component={PrioritizatorApp}>
+      <Route path="category" component={Category} onEnter={requireAuth} />
+      <Route path="about" component={About} />
       <Route path="login" component={Login} />
     </Route>
   </Router>

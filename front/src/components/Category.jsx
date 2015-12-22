@@ -1,9 +1,9 @@
 import React from 'react';
-import AuthenticatedComponent from './AuthenticatedComponent';
-import QuoteStore from '../stores/QuoteStore.js';
-import QuoteService from '../services/QuoteService.js';
 
-export default AuthenticatedComponent(class Quote extends React.Component {
+import CategoryStore from '../stores/Category.js';
+
+
+export default class Category extends React.Component {
   constructor(props) {
     super(props);
     this.state = this.getQuoteState();
@@ -44,4 +44,4 @@ export default AuthenticatedComponent(class Quote extends React.Component {
       </div>
     );
   }
-});
+};
