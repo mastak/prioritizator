@@ -5,70 +5,70 @@ import RouterContainer from '../libs/RouterContainer'
 
 
 class AccountAction {
-  login(username, password) {
-    return this._login(AccountAPI.login.bind(AccountAPI), username, password);
-  }
-
-  loginSocial(code) {
-    return this._login(AccountAPI.loginSocial.bind(AccountAPI), code)
-  }
-
-  _login() {
-    let func = Array.prototype.shift.apply(arguments);
-
-    AppDispatcher.dispatch({
-      type: AccountConstants.LOGIN_REQUEST
-    });
-    return func(arguments).then(this._login_success_cb.bind(this), this._login_fail_cb.bind(this));
-  }
-
-  _login_success_cb(response) {
-    this.setAccount(response.jwt);
-  }
-
-  _login_fail_cb(err, msg) {
-    AppDispatcher.dispatch({
-      type: AccountConstants.LOGIN_PROCESS,
-      err: err,
-      msg: msg
-    });
-  }
-
-  logout() {
-    AccountAPI.logout();
-    this.resetAccount();
-  }
-
-  setAccount(jwt) {
-    let savedJwt = localStorage.getItem('jwt');
-
-    if (!jwt && !savedJwt) return;
-    if (jwt && savedJwt && savedJwt !== jwt) {
-      // TODO: add error message
-      console.error("Error...");
-      return;
+    login(username, password) {
+        return this._login(AccountAPI.login.bind(AccountAPI), username, password);
     }
 
-    jwt = jwt || savedJwt;
-    AppDispatcher.dispatch({
-      type: AccountConstants.LOGIN_PROCESS,
-      jwt: jwt
-    });
-    
-    if (!savedJwt) {
-      let nextPath = RouterContainer.get().getCurrentQuery().nextPath || '/';
-
-      RouterContainer.get().transitionTo(nextPath);
-      localStorage.setItem('jwt', jwt);
+    loginSocial(code) {
+        return this._login(AccountAPI.loginSocial.bind(AccountAPI), code)
     }
-  }
 
-  resetAccount() {
-    localStorage.removeItem('jwt');
-    AppDispatcher.dispatch({
-      type: AccountConstants.LOGOUT_PROCESS
-    });
-  }
+    _login() {
+        let func = Array.prototype.shift.apply(arguments);
+
+        AppDispatcher.dispatch({
+            type: AccountConstants.LOGIN_REQUEST
+        });
+        return func(arguments).then(this._login_success_cb.bind(this), this._login_fail_cb.bind(this));
+    }
+
+    _login_success_cb(response) {
+        this.setAccount(response.jwt);
+    }
+
+    _login_fail_cb(err, msg) {
+        AppDispatcher.dispatch({
+            type: AccountConstants.LOGIN_PROCESS,
+            err: err,
+            msg: msg
+        });
+    }
+
+    logout() {
+        AccountAPI.logout();
+        this.resetAccount();
+    }
+
+    setAccount(jwt) {
+        let savedJwt = localStorage.getItem('jwt');
+
+        if (!jwt && !savedJwt) return;
+        if (jwt && savedJwt && savedJwt !== jwt) {
+            // TODO: add error message
+            console.error("Error...");
+            return;
+        }
+
+        jwt = jwt || savedJwt;
+        AppDispatcher.dispatch({
+            type: AccountConstants.LOGIN_PROCESS,
+            jwt: jwt
+        });
+
+        if (!savedJwt) {
+            let nextPath = RouterContainer.get().getCurrentQuery().nextPath || '/';
+
+            RouterContainer.get().transitionTo(nextPath);
+            localStorage.setItem('jwt', jwt);
+        }
+    }
+
+    resetAccount() {
+        localStorage.removeItem('jwt');
+        AppDispatcher.dispatch({
+            type: AccountConstants.LOGOUT_PROCESS
+        });
+    }
 }
 
 export default new AccountAction();

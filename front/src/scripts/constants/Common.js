@@ -1,3 +1,3 @@
 export default {
-  AUTH_HEADER: 'AUTH'
+    AUTH_HEADER: 'AUTH'
 }

@@ -15,19 +15,19 @@ import Login from './components/Login';
 
 
 function requireAuth(nextState, replaceState) {
-  if (!AccountStore.isLoggedIn())
-    replaceState({ nextPath: nextState.location.pathname }, '/login')
+    if (!AccountStore.isLoggedIn())
+        replaceState({ nextPath: nextState.location.pathname }, '/login')
 }
 
 AccountActions.setAccount();
 
 RouterContainer.set((
-  <Router history={createBrowserHistory()}>
-    <Route path="/" component={PrioritizatorApp}>
-      <Route path="category" component={Category} onEnter={requireAuth} />
-      <Route path="about" component={About} />
-      <Route path="login" component={Login} />
-    </Route>
-  </Router>
+    <Router history={createBrowserHistory()}>
+        <Route path="/" component={PrioritizatorApp}>
+            <Route path="category" component={Category} onEnter={requireAuth} />
+            <Route path="about" component={About} />
+            <Route path="login" component={Login} />
+        </Route>
+    </Router>
 ));
 render(RouterContainer.get(), document.getElementById('content'));
