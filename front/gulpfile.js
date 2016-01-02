@@ -1,141 +1,120 @@
-var gulp = require('gulp'),
-  gulpif = require('gulp-if'),
-  del = require('del'),
-  browserSync = require('browser-sync').create(),
-  //imageMin = require('gulp-imagemin'),
-  webpack = require('webpack-stream'),
-  concat = require('gulp-concat'),
-  uglify = require('gulp-uglify'),
-  stylus = require('gulp-stylus'),
-  cssMin = require('gulp-minify-css'),
-  nib = require('nib'),
-  es = require('event-stream'),
-  merge = require('event-stream').concat,
-  sourcemaps = require('gulp-sourcemaps'),
-  browserify = require('browserify'),
-  source = require('vinyl-source-stream'),
-  buffer = require('vinyl-buffer');
+var argv = require('yargs').argv,
+    gulp = require('gulp'),
+    gulpif = require('gulp-if'),
+    del = require('del'),
+    browserSync = require('browser-sync').create(),
+    webpack = require('webpack-stream'),
+    concat = require('gulp-concat'),
+    uglify = require('gulp-uglify'),
+    stylus = require('gulp-stylus'),
+    cssMin = require('gulp-minify-css'),
+    nib = require('nib'),
+    es = require('event-stream'),
+    sourcemaps = require('gulp-sourcemaps'),
+    browserify = require('browserify'),
+    sourceStream = require('vinyl-source-stream'),
+    rename = require('gulp-rename'),
+    buffer = require('vinyl-buffer');
 
 var buildDir = './build',
-    buildDirJS = './build/js/';
+    buildDirJS = './build/js/',
+    isServe = false;
 
-var webpackAppJS = function(minifyMe) {
-  var b = browserify({
-    entries: './src/scripts/main.jsx',
-    extensions: ['.js', '.jsx'],
-    debug: true
-  });
 
-  return b.bundle()
-    .pipe(source('app.js'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(gulpif(minifyMe, uglify()))
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest(buildDirJS));
-};
+// Concatenate & Minify JS
+gulp.task('scripts', function() {
+    var b = browserify({
+        entries: './src/scripts/main.jsx',
+        extensions: ['.js', '.jsx'],
+        debug: true
+    });
 
-var concatCSS = function(minifyMe) {
-  return gulp.src([
-    './src/styles/**/*.styl'
-  ])
-  .pipe(stylus({use: [nib()]}))
-  .pipe(concat('style.css'))
-  .pipe(gulpif(minifyMe, cssMin()))
-  .pipe(gulp.dest(buildDir))
-  .pipe(browserSync.reload({stream:true}));
-};
+    return b.bundle()
+        .pipe(sourceStream('app.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(gulpif(argv.prod, uglify()))
+        .pipe(gulpif(argv.prod, rename({suffix: '.min'})))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest(buildDirJS))
+        .pipe(gulpif(isServe, browserSync.reload({ stream:true })));
+});
 
-var copyStuff = function(minifyMe) {
-  return gulp.src([
-    './src/**/*',
-    '!./src/scripts/**/*.{js,jsx}',
-    '!./src/styles/**/*.styl'
-  ])
-  .pipe(filterEmptyDirs())
-  .pipe(gulp.dest(buildDir));
-};
+
+// Compile our Styl
+gulp.task('styles', function() {
+    return gulp.src([
+        './src/styles/**/*.styl'
+    ])
+    .pipe(stylus({use: [nib()]}))
+    .pipe(concat('style.css'))
+    .pipe(gulpif(argv.prod, cssMin()))
+    .pipe(gulpif(argv.prod, rename({suffix: '.min'})))
+    .pipe(gulp.dest(buildDir))
+    .pipe(gulpif(isServe, browserSync.reload({ stream:true })));
+});
+
+
+// Copy other stuff
+gulp.task('stuff', function() {
+    return gulp.src([
+        './src/**/*',
+        '!./src/scripts/**/*.{js,jsx}',
+        '!./src/styles/**/*.styl'
+    ])
+    .pipe(filterEmptyDirs())
+    .pipe(gulp.dest(buildDir))
+    .pipe(gulpif(isServe, browserSync.reload({ stream:true })));
+});
+
 
 //removes empty dirs from stream
 var filterEmptyDirs = function() {
-  return es.map(function (file, cb) {
-    if (file.stat.isFile()) {
-      return cb(null, file);
-    } else {
-      return cb();
-    }
-  });
+    return es.map(function (file, cb) {
+        if (file.stat.isFile()) {
+            return cb(null, file);
+        } else {
+            return cb();
+        }
+    });
 };
 
-//var minifyImages = function() {
-//  return gulp.src([
-//    publicAssetsDir+"/**/*"
-//  ])
-//  .pipe(imageMin())
-//  .pipe(gulp.dest(publicAssetsDir));
-//};
-
-//opens up browserSync url
-var syncMe = function() {
-  browserSync.init({
-    baseDir: "build",
-    serveStatic: [buildDir],
-    server: true,
-    logLevel: "debug",
-    logConnections: true
-    //open: false
-    // notify: false
-  });
-};
 
 //cleans build folder
 gulp.task('clean', function() {
-  //return del([buildDir + '/**', '!' + buildDir + '.keep']);
-  return del(['build/**', '!build', '!build/.keep']);
+    return del(['build/**', '!build', '!build/.keep']);
 });
 
-//build + watching, for development
-gulp.task('default', ['clean'], function() {
 
-  //browserSync({
-    //proxy: "localhost:8888",
-    //open: false,
-    //baseDir: buildDir
-    // notify: false
-  //});
+gulp.task('default', ['build']);
 
-  gulp.watch(['./src/scripts/**/*.js', './src/scripts/**/*.jsx'], function() {
-    console.log("File change - webpackAppJS()");
-    webpackAppJS()
-    .pipe(browserSync.reload({stream:true}));
-  });
 
-  gulp.watch('./src/styles/**/*.styl', function() {
-    console.log("File change - concatCSS()");
-    concatCSS();
-  });
+gulp.task('build', ['clean', 'stuff', 'scripts', 'styles']);
 
-  gulp.watch([
-      './src/**/*',
-      '!./src/scripts/**/*.js',
-      '!./src/scripts/**/*.jsx',
-      '!./src/styles/**/*.styl'
-  ], function() {
-    console.log("File change - copyStuff()");
-    copyStuff()
-    .pipe(browserSync.reload({stream:true}));
-  });
 
-  return merge(copyStuff(), concatCSS(), webpackAppJS())
-  .on("end", function() {
-    syncMe();
-  });
+gulp.task('watch', ['clean', 'stuff', 'scripts', 'styles'], function() {
+    gulp.watch(['./src/scripts/**/*.js', './src/scripts/**/*.jsx'], ['scripts']);
+
+    gulp.watch('./src/styles/**/*.styl', ['styles']);
+
+    gulp.watch([
+        './src/**/*',
+        '!./src/scripts/**/*.js',
+        '!./src/scripts/**/*.jsx',
+        '!./src/styles/**/*.styl'
+    ], ['stuff']);
 });
 
-//production build task
-gulp.task('build', ['clean'], function() {
-  return merge(copyStuff(), webpackAppJS(true), concatCSS(true));
-  //.on("end", function() {
-  //  minifyImages();
-  //});
+
+gulp.task('serve', ['watch'], function() {
+    isServe = true;
+    browserSync.init({
+        baseDir: "build",
+        serveStatic: [buildDir],
+        server: true,
+        logLevel: "debug",
+        logConnections: true,
+        open: false
+        // notify: false
+    });
 });
