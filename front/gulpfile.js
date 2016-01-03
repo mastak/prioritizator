@@ -14,10 +14,14 @@ var argv = require('yargs').argv,
     browserify = require('browserify'),
     sourceStream = require('vinyl-source-stream'),
     rename = require('gulp-rename'),
-    buffer = require('vinyl-buffer');
+    buffer = require('vinyl-buffer'),
+    rework = require('gulp-rework'),
+    bootstrap = require('bootstrap-styl'),
+    runSequence = require('run-sequence');
 
 var buildDir = './build',
-    buildDirJS = './build/js/',
+    buildDirJS = buildDir + '/js/',
+    buildDirCSS = buildDir + '/css/',
     isServe = false;
 
 
@@ -44,13 +48,13 @@ gulp.task('scripts', function() {
 // Compile our Styl
 gulp.task('styles', function() {
     return gulp.src([
-        './src/styles/**/*.styl'
+        './src/styles/*.styl'
     ])
-    .pipe(stylus({use: [nib()]}))
+    .pipe(stylus({use: [nib(), bootstrap()]}))
     .pipe(concat('style.css'))
     .pipe(gulpif(argv.prod, cssMin()))
     .pipe(gulpif(argv.prod, rename({suffix: '.min'})))
-    .pipe(gulp.dest(buildDir))
+    .pipe(gulp.dest(buildDirCSS))
     .pipe(gulpif(isServe, browserSync.reload({ stream:true })));
 });
 
@@ -86,13 +90,15 @@ gulp.task('clean', function() {
 });
 
 
+gulp.task('build', function() {
+    runSequence('clean', ['stuff', 'scripts', 'styles']);
+});
+
+
 gulp.task('default', ['build']);
 
 
-gulp.task('build', ['clean', 'stuff', 'scripts', 'styles']);
-
-
-gulp.task('watch', ['clean', 'stuff', 'scripts', 'styles'], function() {
+gulp.task('watch', ['build'], function() {
     gulp.watch(['./src/scripts/**/*.js', './src/scripts/**/*.jsx'], ['scripts']);
 
     gulp.watch('./src/styles/**/*.styl', ['styles']);
