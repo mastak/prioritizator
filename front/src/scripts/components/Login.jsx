@@ -37,8 +37,8 @@ export default class Login extends React.Component {
                     </div>
                     <button type="submit" className="btn btn-default" onClick={this.login.bind(this)}>Submit</button>
                     <div className="form-group">
-                        <button class="zocial facebook">1</button>
-                        <button class="zocial twitter">2</button>
+                        <button className="zocial icon facebook"></button>
+                        <button className="zocial icon twitter"></button>
                     </div>
                 </form>
         </div>
