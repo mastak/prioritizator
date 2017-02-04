@@ -1,0 +1,47 @@
+version: '2'
+
+services:
+
+  pr:
+    build:
+      context: ./back
+      dockerfile: ./docker/Dockerfile
+    image: mastak/prioritizator:latest
+    container_name: pr
+    volumes:
+      - ./back:/usr/src/back
+    environment:
+      - DEBUG=1
+      - DB_URL=pgsql://postgres:postgres@pgsql:5432/prioritizator
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pgsql
+      - redis
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./back/docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    volumes_from:
+      - pr:ro
+    depends_on:
+      - pr
+    ports:
+      - "8000:80"
+
+  pgsql:
+    image: postgres:9.6.1
+    environment:
+      - POSTGRES_DB=prioritizator
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+    ports:
+      - "5432:5432"
+
+
+  redis:
+    image: redis
+    hostname: redis
+    ports:
+      - "6379"

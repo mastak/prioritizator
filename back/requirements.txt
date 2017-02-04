@@ -1,0 +1,10 @@
+dj-database-url==0.4.2
+Django==1.10.5
+djangorestframework==3.5.3
+psycopg2==2.6.2
+python-decouple==3.0
+python-social-auth==0.3.6
+rest-social-auth==1.0.0  # does not use python-social-auth
+social-auth-app-django==1.0.1
+social-auth-core==1.1.0
+djangorestframework-jwt==1.9.0

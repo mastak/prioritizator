@@ -22,9 +22,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'rest_framework.authtoken',  # only if you use token authentication
-    'social.apps.django_app.default',  # python social auth
-    'rest_social_auth',  # provide exchange code to DRF auth token
+    'social_django',
+    # 'rest_framework.authtoken',  # only if you use token authentication
+    # 'social.apps.django_app.default',  # python social auth
+    # 'rest_social_auth',  # provide exchange code to DRF auth token
 )
 
 MIDDLEWARE_CLASSES = (
@@ -89,6 +90,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..', 'staticfiles'))
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.facebook.FacebookOAuth2',
+    # 'social.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
