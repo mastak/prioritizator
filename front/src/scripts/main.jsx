@@ -3,9 +3,9 @@ import { render } from 'react-dom'
 import { Router, Route } from 'react-router'
 import createBrowserHistory from 'history/lib/createBrowserHistory'
 
-import AccountActions from './actions/Account'
 import AccountStore from './stores/Account';
 import AppDispatcher from './dispatchers/AppDispatcher';
+import CommonConstants from './constants/Common';
 import RouterContainer from './libs/RouterContainer';
 
 import PrioritizatorApp from './components/PrioritizatorApp'
@@ -19,7 +19,11 @@ function requireAuth(nextState, replaceState) {
         replaceState({ nextPath: nextState.location.pathname }, '/login')
 }
 
-AccountActions.setAccount();
+
+AppDispatcher.dispatch({
+    type: CommonConstants.PAGE_INIT
+});
+
 
 RouterContainer.set((
     <Router history={createBrowserHistory()}>

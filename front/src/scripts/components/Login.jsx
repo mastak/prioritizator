@@ -15,13 +15,21 @@ export default class Login extends React.Component {
         };
     }
 
+    loginSocial(network) {
+        function _login(e) {
+            e.preventDefault();
+            AccountAction.loginSocial(network);
+        }
+        return _login;
+    }
+
     login(e) {
         e.preventDefault();
-        AccountAction.login(this.state.username, this.state.password)
-            .then(null, function(err) {
-                alert("There's an error logging in");
-                console.log("Error logging in", err);
-            });
+        //AccountAction.login(this.state.username, this.state.password)
+        //    .then(null, function(err) {
+        //        alert("There's an error logging in");
+        //        console.log("Error logging in", err);
+        //    });
     }
 
     render() {
@@ -35,10 +43,14 @@ export default class Login extends React.Component {
                     <div className="form-group">
                         <input type="password" valueLink={this.linkState('password')} className="form-control" id="password" ref="password" placeholder="Password" />
                     </div>
-                    <button type="submit" className="btn btn-default" onClick={this.login.bind(this)}>Submit</button>
                     <div className="form-group">
-                        <button className="zocial icon facebook"></button>
-                        <button className="zocial icon twitter"></button>
+                        <button type="submit" className="btn btn-default" onClick={this.login.bind(this)}>Submit</button>
+                    </div>
+                    <div className="form-group">
+                        <button onClick={this.loginSocial("facebook")} className="zocial icon facebook"></button>
+                        <button onClick={this.loginSocial("twitter")} className="zocial icon twitter"></button>
+                        <button onClick={this.loginSocial("github")} className="zocial icon github"></button>
+                        <button onClick={this.loginSocial("googleplus")} className="zocial icon googleplus"></button>
                     </div>
                 </form>
         </div>

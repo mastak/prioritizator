@@ -1,3 +1,4 @@
 export default {
-    AUTH_HEADER: 'AUTH'
+    AUTH_HEADER: 'AUTH',
+    PAGE_INIT: 'PAGE_INIT'
 }

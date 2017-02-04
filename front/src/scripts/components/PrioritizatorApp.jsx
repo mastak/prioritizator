@@ -36,7 +36,7 @@ export default class PrioritizatorApp extends React.Component {
             loginButton =    <li><a href="" onClick={this.logout}>Logout</a></li>;
         }
         else {
-            loginButton =    <li><Link to="login" activeClassName="active">Login</Link></li>
+            loginButton =    <li><Link to="/login" activeClassName="active">Login</Link></li>
         }
         return (
             <div className="container">
@@ -45,8 +45,8 @@ export default class PrioritizatorApp extends React.Component {
                         <IndexLink to="/" className="navbar-brand">Prioritization</IndexLink>
                     </div>
                     <ul className="nav navbar-nav">
-                        <li><Link to="category" activeClassName="active">Categories</Link></li>
-                        <li><Link to="about" activeClassName="active">About</Link></li>
+                        <li><Link to="/category" activeClassName="active">Categories</Link></li>
+                        <li><Link to="/about" activeClassName="active">About</Link></li>
                         {loginButton}
                     </ul>
                 </nav>

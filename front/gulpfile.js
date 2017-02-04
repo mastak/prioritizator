@@ -120,7 +120,16 @@ gulp.task('serve', ['watch'], function() {
         server: true,
         logLevel: "debug",
         logConnections: true,
-        open: false
+        open: false,
+        middleware: function(req, res, next) {
+            var static_re = /^(\/fonts|\/js|\/css|\/index.html)/i;
+            if (!static_re.test(req.url)) {
+                console.log("change", req.url);
+            //if (req.url === "/login" || req.url === "/login/") {
+                req.url = "/";
+            }
+            return next();
+        }
         // notify: false
     });
 });

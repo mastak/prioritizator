@@ -1,3 +1,6 @@
+
+import hellojs from '../libs/social/main'
+
 import AccountConstants from '../constants/Account';
 import AccountAPI from '../api/Account';
 import AppDispatcher from '../dispatchers/AppDispatcher';
@@ -6,20 +9,25 @@ import RouterContainer from '../libs/RouterContainer'
 
 class AccountAction {
     login(username, password) {
-        return this._login(AccountAPI.login.bind(AccountAPI), username, password);
+        return this.logins(AccountAPI.login.bind(AccountAPI), username, password);
     }
 
-    loginSocial(code) {
-        return this._login(AccountAPI.loginSocial.bind(AccountAPI), code)
+    loginSocial(network) {
+        hellojs(network).login();
     }
 
-    _login() {
+    loginSocialCallback(auth) {
+        return this.logins(AccountAPI.loginSocial.bind(AccountAPI), auth.authResponse.code);
+    }
+
+    logins() {
         let func = Array.prototype.shift.apply(arguments);
 
         AppDispatcher.dispatch({
             type: AccountConstants.LOGIN_REQUEST
         });
-        return func(arguments).then(this._login_success_cb.bind(this), this._login_fail_cb.bind(this));
+        return func(arguments).then(this._login_success_cb.bind(this),
+            this._login_fail_cb.bind(this));
     }
 
     _login_success_cb(response) {

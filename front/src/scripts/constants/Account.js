@@ -1,4 +1,4 @@
-var BASE_URL = 'http://localhost:3001/';
+var BASE_URL = 'http://localhost:3000/';
 
 export default {
     BASE_URL: BASE_URL,
@@ -9,5 +9,6 @@ export default {
     LOGIN_REQUEST: 'LOGIN_REQUEST',
     LOGIN_PROCESS: 'LOGIN_PROCESS',
     LOGOUT_REQUEST: 'LOGOUT_REQUEST',
-    LOGOUT_PROCESS: 'LOGOUT_PROCESS'
+    LOGOUT_PROCESS: 'LOGOUT_PROCESS',
+    SOCIAL_AUTH_CALLBACK: 'SOCIAL_AUTH_CALLBACK'
 }
