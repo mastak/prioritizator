@@ -14,6 +14,7 @@ function getAppState() {
 
 export default class PrioritizatorApp extends React.Component {
     constructor() {
+        console.log("1111");
         super();
         this.state = getAppState();
     }
@@ -38,6 +39,7 @@ export default class PrioritizatorApp extends React.Component {
         else {
             loginButton =    <li><Link to="/login" activeClassName="active">Login</Link></li>
         }
+        console.log("asasas");
         return (
             <div className="container">
                 <nav className="navbar navbar-default">

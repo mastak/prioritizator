@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom'
 import { Router, Route } from 'react-router'
-import createBrowserHistory from 'history/lib/createBrowserHistory'
+// import createBrowserHistory from 'history/createBrowserHistory'
 
 import AccountStore from './stores/Account';
 import AppDispatcher from './dispatchers/AppDispatcher';
@@ -26,7 +26,7 @@ AppDispatcher.dispatch({
 
 
 RouterContainer.set((
-    <Router history={createBrowserHistory()}>
+    <Router>
         <Route path="/" component={PrioritizatorApp}>
             <Route path="category" component={Category} onEnter={requireAuth} />
             <Route path="about" component={About} />
