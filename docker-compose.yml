@@ -19,6 +19,17 @@ services:
       - pgsql
       - redis
 
+  front:
+    build:
+      context: ./front2
+      dockerfile: ./docker/Dockerfile
+    image: mastak/prioritizator-client:latest
+    container_name: front
+    volumes:
+      - ./front2:/usr/src/front
+    ports:
+      - "3000:3000"
+
   nginx:
     image: nginx
     volumes:
